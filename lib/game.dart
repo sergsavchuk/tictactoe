@@ -15,34 +15,30 @@ typedef GameOverCallback = void Function(
 class Game with ChangeNotifier {
   Game({
     required this.fieldSize,
-    required this.playerHasFirstTurn,
     required GameOverCallback gameOverCallback,
   }) : _gameOverCallback = gameOverCallback {
-    _fieldState = List.generate(
-      fieldSize * fieldSize,
-      (_) => CellState.empty,
-    );
+    _fieldState = List.filled(fieldSize * fieldSize, CellState.empty);
 
-    if (!playerHasFirstTurn) {
-      _opponentTurn();
-    }
+    _restart();
   }
 
   final int fieldSize;
-  final bool playerHasFirstTurn;
   final GameOverCallback _gameOverCallback;
 
   // TODO(sergsavchuk): replace by two-dimensional list
   late final List<CellState> _fieldState;
+  late bool _playerHasFirstTurn;
   Match? _match;
   bool _draw = false;
+
+  late final _random = Random();
 
   void playerTap(int cellIndex) {
     if (!_gameOver &&
         _fieldState[cellIndex] == CellState.empty &&
         _isPlayerTurn()) {
       _fieldState[cellIndex] =
-          playerHasFirstTurn ? CellState.cross : CellState.circle;
+          _playerHasFirstTurn ? CellState.cross : CellState.circle;
 
       _checkGameOver();
       notifyListeners();
@@ -65,11 +61,19 @@ class Game with ChangeNotifier {
         : null;
   }
 
-  void _restart() {
+  void _restart({bool notify = true}) {
     _match = null;
     _draw = false;
     _fieldState.fillRange(0, fieldSize * fieldSize, CellState.empty);
-    notifyListeners();
+    _playerHasFirstTurn = _random.nextBool();
+
+    if (!_playerHasFirstTurn) {
+      _opponentTurn();
+    }
+
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   Future<void> _opponentTurn() async {
@@ -80,12 +84,12 @@ class Game with ChangeNotifier {
       return;
     }
 
-    var randomFreeCellIndex = Random().nextInt(freeCellsCount);
+    var randomFreeCellIndex = _random.nextInt(freeCellsCount);
     for (var i = 0; i < _fieldState.length; i++) {
       if (_fieldState[i] == CellState.empty) {
         if (randomFreeCellIndex-- == 0) {
           _fieldState[i] =
-              playerHasFirstTurn ? CellState.circle : CellState.cross;
+              _playerHasFirstTurn ? CellState.circle : CellState.cross;
 
           _checkGameOver();
 
@@ -100,7 +104,7 @@ class Game with ChangeNotifier {
         _fieldState.where((element) => element == CellState.cross).length;
     final circlesCount =
         _fieldState.where((element) => element == CellState.circle).length;
-    if (playerHasFirstTurn) {
+    if (_playerHasFirstTurn) {
       return crossesCount == circlesCount;
     }
 
@@ -126,9 +130,9 @@ class Game with ChangeNotifier {
       }
 
       if ((_fieldState[match.cellIndices[0]] == CellState.cross &&
-              playerHasFirstTurn) ||
+              _playerHasFirstTurn) ||
           (_fieldState[match.cellIndices[0]] == CellState.circle &&
-              !playerHasFirstTurn)) {
+              !_playerHasFirstTurn)) {
         _gameOverCallback('Win', _restart);
       } else {
         _gameOverCallback('Defeat', _restart);

@@ -26,7 +26,6 @@ class _GamePageState extends State<GamePage> {
             child: ChangeNotifierProvider(
               create: (context) => Game(
                 fieldSize: 3,
-                playerHasFirstTurn: true,
                 gameOverCallback: (result, restart) => showDialog<void>(
                   context: context,
                   barrierDismissible: false,
