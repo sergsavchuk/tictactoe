@@ -1,16 +1,24 @@
-# tictactoe
+# Tic Tac Toe
 
 Tic Tac Toe for iOS & Android
 
-## Getting Started
+## Configuration
+### AdMob
+#### .env
+Create `.env` file in the project root with:
+```shell
+ANDROID_BANNER_AD_UNIT_ID=your-android-banner-ad-unit-id
+IOS_BANNER_AD_UNIT_ID=your-ios-banner-ad-unit-id
+```
 
-This project is a starting point for a Flutter application.
+#### iOS
+Create `ios/Flutter/Local.xcconfig` to provide the AdMob App ID for iOS:
+```shell
+ADMOB_APP_ID=your-ios-admob-app-id
+```
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### Android
+Add following line to `android/local.properties` to provide the AdMob App ID for Android:
+```shell
+admobAppId=your-android-admob-app-id
+```

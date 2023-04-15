@@ -49,3 +49,7 @@ app.*.map.json
 # Firebase
 .firebaserc
 .firebase/
+
+# Envied
+.env
+lib/env/env.g.dart

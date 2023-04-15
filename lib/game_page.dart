@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tictactoe/ad_banner_widget.dart';
 import 'package:tictactoe/game.dart';
 import 'package:tictactoe/main.dart';
 import 'package:tictactoe/match.dart';
@@ -18,56 +19,66 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            alignment: Alignment.topLeft,
-            child: ChangeNotifierProvider(
-              create: (context) => Game(
-                fieldSize: 3,
-                gameOverCallback: (result, restart) => showDialog<void>(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) => Dialog(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          result,
-                          style: Theme.of(context)
-                              .primaryTextTheme
-                              .headlineLarge
-                              ?.copyWith(color: Colors.black),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Center(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                alignment: Alignment.topLeft,
+                child: ChangeNotifierProvider(
+                  create: (context) => Game(
+                    fieldSize: 3,
+                    gameOverCallback: (result, restart) => showDialog<void>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => Dialog(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              onPressed: () =>
-                                  Navigator.of(context).push(MenuPage.route()),
-                              iconSize: 50,
-                              icon: const Icon(Icons.home),
+                            Text(
+                              result,
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .headlineLarge
+                                  ?.copyWith(color: Colors.black),
                             ),
-                            IconButton(
-                              onPressed: () {
-                                restart();
-                                Navigator.of(context).pop();
-                              },
-                              iconSize: 50,
-                              icon: const Icon(Icons.refresh),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  onPressed: () => Navigator.of(context)
+                                      .push(MenuPage.route()),
+                                  iconSize: 50,
+                                  icon: const Icon(Icons.home),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    restart();
+                                    Navigator.of(context).pop();
+                                  },
+                                  iconSize: 50,
+                                  icon: const Icon(Icons.refresh),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
+                  child: const _GameField(),
                 ),
               ),
-              child: const _GameField(),
             ),
           ),
-        ),
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AdBannerWidget(),
+          )
+        ],
       ),
     );
   }
