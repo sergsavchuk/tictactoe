@@ -45,3 +45,7 @@ app.*.map.json
 
 # asdf
 .tool-versions
+
+# Firebase
+.firebaserc
+.firebase/
