@@ -4,6 +4,8 @@ import 'package:tictactoe/game_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // TODO(sergsavchuk): process initialization errors
   MobileAds.instance.initialize();
 
   runApp(const MyApp());
