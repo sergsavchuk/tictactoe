@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sergsavchuk.tictactoe">
+
+   <uses-permission android:name="com.android.vending.BILLING" />
+
    <application
         android:label="Tic Tac Toe"
         android:name="${applicationName}"

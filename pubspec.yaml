@@ -2,7 +2,7 @@ name: tictactoe
 description: Tic Tac Toe for iOS & Android
 publish_to: 'none'
 
-version: 1.1.0+4
+version: 1.2.0+8
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_mobile_ads: ^2.4.0
+  in_app_purchase: ^3.1.5
   provider: ^6.0.5
 
 dev_dependencies:

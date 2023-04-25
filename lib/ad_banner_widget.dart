@@ -6,7 +6,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tictactoe/env/env.dart';
 
 class AdBannerWidget extends StatefulWidget {
-  const AdBannerWidget({super.key});
+  const AdBannerWidget({required this.bannerSize, super.key});
+
+  final AdSize bannerSize;
 
   @override
   State<AdBannerWidget> createState() => _AdBannerWidgetState();
@@ -21,7 +23,6 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   final releaseAdUnitId =
       Platform.isAndroid ? Env.androidBannerAdUnitId : Env.iosBannerAdUnitId;
 
-  final bannerSize = AdSize.banner;
   BannerAd? banner;
 
   @override
@@ -31,7 +32,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     BannerAd(
       adUnitId: kDebugMode ? debugAdUnitId : releaseAdUnitId,
       request: const AdRequest(),
-      size: bannerSize,
+      size: widget.bannerSize,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() {
@@ -49,8 +50,8 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: bannerSize.width.toDouble(),
-      height: bannerSize.height.toDouble(),
+      width: widget.bannerSize.width.toDouble(),
+      height: widget.bannerSize.height.toDouble(),
       child: banner != null ? AdWidget(ad: banner!) : null,
     );
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe/ad_banner_widget.dart';
 import 'package:tictactoe/game.dart';
 import 'package:tictactoe/main.dart';
 import 'package:tictactoe/match.dart';
+import 'package:tictactoe/payments_provider.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -16,6 +18,8 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  final adBannerSize = AdSize.banner;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,11 +76,26 @@ class _GamePageState extends State<GamePage> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: AdBannerWidget(),
+            child: Consumer<PaymentsProvider>(
+              builder: (_, paymentsProvider, __) => Visibility(
+                visible: !paymentsProvider.noAds,
+                child: AdBannerWidget(bannerSize: adBannerSize),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: adBannerSize.height.toDouble(),
+            child: Consumer<PaymentsProvider>(
+              builder: (_, paymentsProvider, __) => Visibility(
+                visible: !paymentsProvider.noAds && paymentsProvider.available,
+                child: const _NoAdsButton(),
+              ),
+            ),
           )
         ],
       ),
@@ -190,5 +209,31 @@ class _MatchPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
+  }
+}
+
+class _NoAdsButton extends StatelessWidget {
+  const _NoAdsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const Text(
+          'Ads',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          onPressed: () => Provider.of<PaymentsProvider>(context, listen: false)
+              .purchaseNoAds(),
+          icon: const Icon(
+            Icons.not_interested,
+            color: Colors.red,
+            size: 50,
+          ),
+        ),
+      ],
+    );
   }
 }

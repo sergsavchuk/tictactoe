@@ -1,28 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 import 'package:tictactoe/game_page.dart';
+import 'package:tictactoe/payments_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // TODO(sergsavchuk): process initialization errors
-  MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
 
-  runApp(const MyApp());
+  final paymentsProvider = PaymentsProvider();
+  await paymentsProvider.init();
+
+  runApp(MyApp(paymentsProvider: paymentsProvider));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.paymentsProvider, super.key});
+
+  final PaymentsProvider paymentsProvider;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tic Tac Toe',
-      theme: ThemeData(
-        useMaterial3: true,
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider.value(
+      value: paymentsProvider,
+      child: MaterialApp(
+        title: 'Tic Tac Toe',
+        theme: ThemeData(
+          useMaterial3: true,
+          primarySwatch: Colors.blue,
+        ),
+        home: const MenuPage(),
       ),
-      home: const MenuPage(),
     );
   }
 }
