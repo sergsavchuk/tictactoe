@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -47,7 +48,11 @@ class PaymentsProvider extends ChangeNotifier {
       },
     );
 
-    await InAppPurchase.instance.restorePurchases();
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (e) {
+      log('Restore purchases error: $e');
+    }
 
     notifyListeners();
   }

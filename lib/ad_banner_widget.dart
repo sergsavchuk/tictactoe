@@ -49,10 +49,14 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.bannerSize.width.toDouble(),
-      height: widget.bannerSize.height.toDouble(),
-      child: banner != null ? AdWidget(ad: banner!) : null,
+    return Container(
+      color: Colors.white,
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: widget.bannerSize.width.toDouble(),
+        height: widget.bannerSize.height.toDouble(),
+        child: banner != null ? AdWidget(ad: banner!) : null,
+      ),
     );
   }
 
