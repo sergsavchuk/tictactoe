@@ -1,103 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe/ad_banner_widget.dart';
+import 'package:tictactoe/app_theme.dart';
 import 'package:tictactoe/game.dart';
 import 'package:tictactoe/main.dart';
 import 'package:tictactoe/match.dart';
 import 'package:tictactoe/payments_provider.dart';
 
-class GamePage extends StatefulWidget {
+class GamePage extends StatelessWidget {
   const GamePage({super.key});
 
   static Route<void> route() =>
       MaterialPageRoute(builder: (_) => const GamePage());
 
   @override
-  State<GamePage> createState() => _GamePageState();
-}
-
-class _GamePageState extends State<GamePage> {
-  final adBannerSize = AdSize.banner;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Center(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                alignment: Alignment.topLeft,
-                child: ChangeNotifierProvider(
-                  create: (context) => Game(
-                    fieldSize: 3,
-                    gameOverCallback: (result, restart) => showDialog<void>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => Dialog(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              result,
-                              style: Theme.of(context)
-                                  .primaryTextTheme
-                                  .headlineLarge
-                                  ?.copyWith(color: Colors.black),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  onPressed: () => Navigator.of(context)
-                                      .push(MenuPage.route()),
-                                  iconSize: 50,
-                                  icon: const Icon(Icons.home),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    restart();
-                                    Navigator.of(context).pop();
-                                  },
-                                  iconSize: 50,
-                                  icon: const Icon(Icons.refresh),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+    final appTheme = AppTheme.getTheme(context);
+    return Provider<AppTheme>.value(
+      value: appTheme,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  alignment: Alignment.topLeft,
+                  child: ChangeNotifierProvider(
+                    create: (context) => Game(
+                      fieldSize: 3,
+                      gameOverCallback: (result, restart) =>
+                          _gameOverCallback(context, appTheme, result, restart),
                     ),
+                    child: const _GameField(),
                   ),
-                  child: const _GameField(),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Consumer<PaymentsProvider>(
-              builder: (_, paymentsProvider, __) => Visibility(
-                visible: !paymentsProvider.noAds,
-                child: AdBannerWidget(bannerSize: adBannerSize),
+            Positioned(
+              bottom: 0,
+              left: appTheme.orientation == Orientation.portrait ? 0 : null,
+              right: 0,
+              top: appTheme.orientation == Orientation.landscape ? 0 : null,
+              child: Consumer<PaymentsProvider>(
+                builder: (_, paymentsProvider, __) => Visibility(
+                  visible: !paymentsProvider.noAds,
+                  child: RotatedBox(
+                    quarterTurns:
+                        appTheme.orientation == Orientation.landscape ? 1 : 0,
+                    child: AdBannerWidget(
+                      bannerSize: appTheme.adBannerSize,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          Positioned(
-            right: 0,
-            bottom: adBannerSize.height.toDouble(),
-            child: Consumer<PaymentsProvider>(
-              builder: (_, paymentsProvider, __) => Visibility(
-                visible: !paymentsProvider.noAds && paymentsProvider.available,
-                child: const _NoAdsButton(),
+            Positioned(
+              right: appTheme.orientation == Orientation.portrait
+                  ? 0
+                  : appTheme.adBannerSize.height.toDouble(),
+              bottom: appTheme.orientation == Orientation.portrait
+                  ? appTheme.adBannerSize.height.toDouble()
+                  : 0,
+              child: Consumer<PaymentsProvider>(
+                builder: (_, paymentsProvider, __) => Visibility(
+                  visible:
+                      !paymentsProvider.noAds && paymentsProvider.available,
+                  child: const _NoAdsButton(),
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _gameOverCallback(
+    BuildContext context,
+    AppTheme appTheme,
+    String result,
+    GameRestartFunction restart,
+  ) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                result,
+                style:
+                    Theme.of(context).primaryTextTheme.headlineLarge?.copyWith(
+                          color: Colors.black,
+                          fontSize: appTheme.textSize,
+                        ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () =>
+                        Navigator.of(context).push(MenuPage.route()),
+                    iconSize: appTheme.iconSize,
+                    icon: const Icon(Icons.home),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      restart();
+                      Navigator.of(context).pop();
+                    },
+                    iconSize: appTheme.iconSize,
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -128,7 +152,7 @@ class _GameField extends StatelessWidget {
               ),
             ),
             child: Consumer<Game>(
-              builder: (_, game, __) => _getCellContent(game, index),
+              builder: (context, game, __) => _getCellContent(game, index),
             ),
           ),
         ),
@@ -150,18 +174,18 @@ class _GameField extends StatelessWidget {
     if (cellState == CellState.empty) {
       return const SizedBox.shrink();
     } else {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          Icon(iconData, size: 50),
-          if (matchTypeForCell != null)
-            LayoutBuilder(
-              builder: (_, constrains) => CustomPaint(
-                size: constrains.biggest,
+      return LayoutBuilder(
+        builder: (_, constraints) => Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(iconData, size: constraints.maxWidth * .55),
+            if (matchTypeForCell != null)
+              CustomPaint(
+                size: constraints.biggest,
                 painter: _MatchPainter(matchTypeForCell),
-              ),
-            )
-        ],
+              )
+          ],
+        ),
       );
     }
   }
@@ -220,17 +244,20 @@ class _NoAdsButton extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        const Text(
+        Text(
           'Ads',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: context.read<AppTheme>().iconSize / 2.2,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         IconButton(
           onPressed: () => Provider.of<PaymentsProvider>(context, listen: false)
               .purchaseNoAds(),
-          icon: const Icon(
+          icon: Icon(
             Icons.not_interested,
             color: Colors.red,
-            size: 50,
+            size: context.read<AppTheme>().iconSize,
           ),
         ),
       ],

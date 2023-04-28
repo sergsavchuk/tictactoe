@@ -15,6 +15,7 @@ Tic Tac Toe for iOS & Android
 - AdMob ads
 - In-app purchases
 - Provider state management
+- Responsive UI
 
 ## Configuration
 ### AdMob
