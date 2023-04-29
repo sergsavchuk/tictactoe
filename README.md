@@ -1,5 +1,8 @@
 # Tic Tac Toe
 
+[![Codemagic build status](https://api.codemagic.io/apps/644cb8b907ee905b68683245/644cb8b907ee905b68683244/status_badge.svg)](https://codemagic.io/apps/644cb8b907ee905b68683245/644cb8b907ee905b68683244/latest_build)
+[![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
+
 Tic Tac Toe for iOS & Android
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
