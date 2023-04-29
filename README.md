@@ -19,6 +19,8 @@ Tic Tac Toe for iOS & Android
 - In-app purchases
 - Provider state management
 - Responsive UI
+- Firebase Hosting(+ Github Actions)
+- Automatic builds and deployment via Codemagic
 
 ## Configuration
 ### AdMob
