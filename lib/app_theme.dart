@@ -10,9 +10,13 @@ abstract class AppTheme {
 
   double get iconSize;
 
+  double get largeIconSize;
+
   AdSize get adBannerSize;
 
   double get textSize;
+
+  double get largeTextSize;
 
   static AppTheme getTheme(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -31,10 +35,16 @@ class _PhoneAppTheme extends AppTheme {
   double get iconSize => 50;
 
   @override
+  double get largeIconSize => 150;
+
+  @override
   AdSize get adBannerSize => AdSize.banner;
 
   @override
-  double get textSize => 30;
+  double get textSize => 20;
+
+  @override
+  double get largeTextSize => 30;
 }
 
 class _TabletAppTheme extends AppTheme {
@@ -44,8 +54,14 @@ class _TabletAppTheme extends AppTheme {
   double get iconSize => 100;
 
   @override
+  double get largeIconSize => 300;
+
+  @override
   AdSize get adBannerSize => AdSize.largeBanner;
 
   @override
-  double get textSize => 45;
+  double get textSize => 35;
+
+  @override
+  double get largeTextSize => 45;
 }

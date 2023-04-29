@@ -96,7 +96,7 @@ class GamePage extends StatelessWidget {
                 style:
                     Theme.of(context).primaryTextTheme.headlineLarge?.copyWith(
                           color: Colors.black,
-                          fontSize: appTheme.textSize,
+                          fontSize: appTheme.largeTextSize,
                         ),
               ),
               Row(

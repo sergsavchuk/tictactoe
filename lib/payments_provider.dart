@@ -48,11 +48,7 @@ class PaymentsProvider extends ChangeNotifier {
       },
     );
 
-    try {
-      await InAppPurchase.instance.restorePurchases();
-    } catch (e) {
-      log('Restore purchases error: $e');
-    }
+    await restorePurchases();
 
     notifyListeners();
   }
@@ -64,6 +60,14 @@ class PaymentsProvider extends ChangeNotifier {
     final purchaseParam = PurchaseParam(productDetails: productDetails);
     return InAppPurchase.instance
         .buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  Future<void> restorePurchases() async {
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (e) {
+      log('Restore purchases error: $e');
+    }
   }
 
   Future<ProductDetails> _loadProduct(String id) async {
