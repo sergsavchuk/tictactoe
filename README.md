@@ -12,7 +12,7 @@ Tic Tac Toe for iOS & Android
       alt="Download on the App Store"
       style="border-radius: 13px;
       width: 250px;
-      height: 80px;">](#)
+      height: 80px;">](https://apps.apple.com/us/app/tic-tac-toe-pros/id6448105734)
 
 ## Features
 - AdMob ads
