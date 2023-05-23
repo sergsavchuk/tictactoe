@@ -1,4 +1,4 @@
-import 'package:tictactoe/game.dart';
+import 'package:tictactoe/enums/cell_state.dart';
 
 enum MatchType { row, column, leftDiagonal, rightDiagonal }
 

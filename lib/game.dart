@@ -2,13 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tictactoe/analytics_provider.dart';
+import 'package:tictactoe/enums/cell_state.dart';
+import 'package:tictactoe/enums/game_result.dart';
 import 'package:tictactoe/match.dart';
-
-enum CellState { empty, cross, circle }
 
 typedef GameRestartFunction = void Function();
 typedef GameOverCallback = void Function(
-  String result,
+  GameResult result,
   GameRestartFunction restartFunction,
 );
 
@@ -16,7 +17,9 @@ class Game with ChangeNotifier {
   Game({
     required this.fieldSize,
     required GameOverCallback gameOverCallback,
-  }) : _gameOverCallback = gameOverCallback {
+    required AnalyticsProvider analyticsProvider,
+  })  : _gameOverCallback = gameOverCallback,
+        _analyticsProvider = analyticsProvider {
     _fieldState = List.filled(fieldSize * fieldSize, CellState.empty);
 
     _restart();
@@ -24,6 +27,7 @@ class Game with ChangeNotifier {
 
   final int fieldSize;
   final GameOverCallback _gameOverCallback;
+  final AnalyticsProvider _analyticsProvider;
 
   // TODO(sergsavchuk): replace by two-dimensional list
   late final List<CellState> _fieldState;
@@ -123,7 +127,11 @@ class Game with ChangeNotifier {
             _fieldState.where((element) => element == CellState.empty).isEmpty;
 
         if (_draw) {
-          _gameOverCallback('Draw', _restart);
+          _analyticsProvider.logMatchResult(
+            result: GameResult.draw,
+            figure: _playerHasFirstTurn ? CellState.cross : CellState.cross,
+          );
+          _gameOverCallback(GameResult.draw, _restart);
         }
 
         return;
@@ -133,9 +141,17 @@ class Game with ChangeNotifier {
               _playerHasFirstTurn) ||
           (_fieldState[match.cellIndices[0]] == CellState.circle &&
               !_playerHasFirstTurn)) {
-        _gameOverCallback('Win', _restart);
+        _analyticsProvider.logMatchResult(
+          result: GameResult.win,
+          figure: _playerHasFirstTurn ? CellState.cross : CellState.cross,
+        );
+        _gameOverCallback(GameResult.win, _restart);
       } else {
-        _gameOverCallback('Defeat', _restart);
+        _analyticsProvider.logMatchResult(
+          result: GameResult.defeat,
+          figure: _playerHasFirstTurn ? CellState.cross : CellState.cross,
+        );
+        _gameOverCallback(GameResult.defeat, _restart);
       }
     }
   }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe/ad_banner_widget.dart';
+import 'package:tictactoe/analytics_provider.dart';
 import 'package:tictactoe/app_theme.dart';
+import 'package:tictactoe/enums/cell_state.dart';
+import 'package:tictactoe/enums/game_result.dart';
 import 'package:tictactoe/game.dart';
 import 'package:tictactoe/main.dart';
 import 'package:tictactoe/match.dart';
@@ -29,6 +32,7 @@ class GamePage extends StatelessWidget {
                   child: ChangeNotifierProvider(
                     create: (context) => Game(
                       fieldSize: 3,
+                      analyticsProvider: context.read<AnalyticsProvider>(),
                       gameOverCallback: (result, restart) =>
                           _gameOverCallback(context, appTheme, result, restart),
                     ),
@@ -79,7 +83,7 @@ class GamePage extends StatelessWidget {
   Future<void> _gameOverCallback(
     BuildContext context,
     AppTheme appTheme,
-    String result,
+    GameResult result,
     GameRestartFunction restart,
   ) {
     return showDialog<void>(
@@ -92,7 +96,7 @@ class GamePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                result,
+                _getGameResultString(result),
                 style:
                     Theme.of(context).primaryTextTheme.headlineLarge?.copyWith(
                           color: Colors.black,
@@ -124,6 +128,18 @@ class GamePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // TODO(sergsavchuk): add localization
+  String _getGameResultString(GameResult result) {
+    switch (result) {
+      case GameResult.draw:
+        return 'Draw';
+      case GameResult.win:
+        return 'Win';
+      case GameResult.defeat:
+        return 'Defeat';
+    }
   }
 }
 
