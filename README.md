@@ -7,15 +7,18 @@ Tic Tac Toe for iOS & Android
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
       alt="Get it on Google Play"
-      height="80">](https://play.google.com/store/apps/details?id=com.sergsavchuk.tictactoe&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+      width="250"
+      height="100">](https://play.google.com/store/apps/details?id=com.sergsavchuk.tictactoe&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+
 [<img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x80&amp;releaseDate=1310601600" 
       alt="Download on the App Store"
-      style="border-radius: 13px;
+      style="
       width: 250px;
-      height: 80px;">](https://apps.apple.com/us/app/tic-tac-toe-pros/id6448105734)
+      height: 73px;">](https://apps.apple.com/us/app/tic-tac-toe-pros/id6448105734)
 
 ## Features
 - AdMob ads
+- Firebase Analytics
 - In-app purchases
 - Provider state management
 - Responsive UI
