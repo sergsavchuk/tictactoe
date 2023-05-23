@@ -2,7 +2,7 @@ name: tictactoe
 description: Tic Tac Toe for iOS & Android
 publish_to: 'none'
 
-version: 1.4.1+11
+version: 1.4.2+12
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
