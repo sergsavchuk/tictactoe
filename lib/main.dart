@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,17 +19,7 @@ import 'package:tictactoe/settings_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // init Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  FlutterError.onError = (errorDetails) =>
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  await initFirebaseServices();
 
   // hide system UI overlays
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -45,6 +38,54 @@ void main() async {
       analyticsProvider: analyticsProvider,
     ),
   );
+}
+
+Future<void> initFirebaseServices() async {
+  // init Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // setup Crashlytics
+  FlutterError.onError = (errorDetails) =>
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
+  final settings = await FirebaseMessaging.instance.requestPermission();
+  log('Notifications permission: ${settings.authorizationStatus}');
+
+  // setup FCM
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  persistFcmToken(fcmToken);
+
+  FirebaseMessaging.instance.onTokenRefresh
+      .listen(persistFcmToken)
+      .onError((Object? err) {
+    if (err is Object) {
+      FirebaseCrashlytics.instance.recordError(err, null);
+    }
+  });
+
+  final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    processMessage(initialMessage);
+  }
+
+  FirebaseMessaging.onMessageOpenedApp.listen(processMessage);
+  FirebaseMessaging.onMessage.listen((message) {
+    // TODO(sergsavchuk): display any in-game notification
+  });
+}
+
+void processMessage(RemoteMessage message) {
+  // TODO(sergsavchuk): navigate to the game page
+}
+
+void persistFcmToken(String? fcmToken) {
+  // TODO(sergsavchuk): write the token to Firestore
 }
 
 class MyApp extends StatelessWidget {
