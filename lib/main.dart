@@ -54,30 +54,32 @@ Future<void> initFirebaseServices() async {
     return true;
   };
 
-  final settings = await FirebaseMessaging.instance.requestPermission();
-  log('Notifications permission: ${settings.authorizationStatus}');
-
   // setup FCM
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  persistFcmToken(fcmToken);
+  final fcmSettings = await FirebaseMessaging.instance.requestPermission();
+  log('Notifications permission: ${fcmSettings.authorizationStatus}');
 
-  FirebaseMessaging.instance.onTokenRefresh
-      .listen(persistFcmToken)
-      .onError((Object? err) {
-    if (err is Object) {
-      FirebaseCrashlytics.instance.recordError(err, null);
+  if (fcmSettings.authorizationStatus == AuthorizationStatus.authorized) {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    persistFcmToken(fcmToken);
+
+    FirebaseMessaging.instance.onTokenRefresh
+        .listen(persistFcmToken)
+        .onError((Object? err) {
+      if (err is Object) {
+        FirebaseCrashlytics.instance.recordError(err, null);
+      }
+    });
+
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      processMessage(initialMessage);
     }
-  });
 
-  final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (initialMessage != null) {
-    processMessage(initialMessage);
+    FirebaseMessaging.onMessageOpenedApp.listen(processMessage);
+    FirebaseMessaging.onMessage.listen((message) {
+      // TODO(sergsavchuk): display any in-game notification
+    });
   }
-
-  FirebaseMessaging.onMessageOpenedApp.listen(processMessage);
-  FirebaseMessaging.onMessage.listen((message) {
-    // TODO(sergsavchuk): display any in-game notification
-  });
 }
 
 void processMessage(RemoteMessage message) {
